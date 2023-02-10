@@ -1,0 +1,26 @@
+---
+- name: generate /etc/hosts from inventory
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item }}$'
+    line: '{{ hostvars[item].ansible_host }}  {{ hostvars[item].inventory_hostname }}'
+    state: present
+  when: hostvars[item].inventory_hostname is defined
+  with_items: '{{ groups.server }}'
+  tags: 'hosts'
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  ansible.builtin.apt:
+    update_cache: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install a list of packages
+  ansible.builtin.apt:
+    pkg:
+    - curl
+    - wget
+    - net-tools
+    - vim
+    - htop
+    - apt-transport-https

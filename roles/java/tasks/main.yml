@@ -1,0 +1,12 @@
+---
+- name: Install a openjdk 18
+  ansible.builtin.apt:
+    pkg:
+    - openjdk-18-jdk
+
+- name: Add environment variable JAVA_HOME and ES_JAVA_HOME at /etc/environment
+  ansible.builtin.blockinfile:
+    path: /etc/environment
+    block: |
+      JAVA_HOME="/usr/lib/jvm/java-18-openjdk-amd64"
+      ES_JAVA_HOME="/usr/lib/jvm/java-18-openjdk-amd64"
