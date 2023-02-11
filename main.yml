@@ -4,10 +4,12 @@
   become: yes
   vars_files:
     - "./vars.yml"
+  vars:
+    cluster_name: "elastic-cluster"
+    elastic_port: "9200"
+    network_host: "0.0.0.0"
   roles:
     - common
     - java
     - elastic
-#  tasks:    
-#  - name: Check that you can connect (GET) to a page and it returns a status 200
-#    debug: msg="{{ lookup('url', '{{ url }}', split_lines=False) }}"
+

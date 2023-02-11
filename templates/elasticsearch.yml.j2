@@ -14,13 +14,13 @@
 #
 # Use a descriptive name for your cluster:
 #
-#cluster.name: my-application
+cluster.name: {{ cluster_name }}
 #
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-#node.name: node-1
+node.name: {{ inventory_hostname }}
 #
 # Add custom attributes to the node:
 #
@@ -53,12 +53,12 @@ path.logs: /var/log/elasticsearch
 # By default Elasticsearch is only accessible on localhost. Set a different
 # address here to expose this node on the network:
 #
-#network.host: 192.168.0.1
+network.host: {{ ansible_host }}
 #
 # By default Elasticsearch listens for HTTP traffic on the first free port it
 # finds starting at 9200. Set a specific HTTP port here:
 #
-#http.port: 9200
+http.port: {{ elastic_port }}
 #
 # For more information, consult the network module documentation.
 #
@@ -68,6 +68,8 @@ path.logs: /var/log/elasticsearch
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
 #discovery.seed_hosts: ["host1", "host2"]
+discovery.seed_hosts: ["{{ groups.server | join ("\",\"") }}"]
+cluster.initial_master_nodes: ["{{ groups.master | join ("\",\"") }}"]
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
@@ -112,7 +114,6 @@ xpack.security.transport.ssl:
   truststore.path: certs/transport.p12
 # Create a new cluster with the current node only
 # Additional nodes can still join the cluster later
-cluster.initial_master_nodes: ["ubuntu"]
 
 # Allow HTTP API connections from anywhere
 # Connections are encrypted and require user authentication

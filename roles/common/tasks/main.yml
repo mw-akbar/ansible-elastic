@@ -24,3 +24,14 @@
     - vim
     - htop
     - apt-transport-https
+
+- name: Install python3-pip
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+    update_cache: yes
+
+- name: ensure pexpect is installed in the playbook python
+  ansible.builtin.pip:
+    name: pexpect
+

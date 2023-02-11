@@ -21,4 +21,35 @@
 
 - name: Run a command using a templated variable (always use quote filter to avoid injection)
   ansible.builtin.shell: echo "{{ groups.server }}" > /root/akbar.txt
-    
+  when: inventory_hostname in groups['master']
+
+- name: change config elasticsearch.yml
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+  tags: config_nginx
+  when: inventory_hostname in groups['master']
+
+- name: Enable and start only for master bootstrap node
+  ansible.builtin.systemd:
+    name: elasticsearch
+    state: restarted
+    daemon_reload: true      
+    enabled: true
+  when: inventory_hostname in groups['master']
+
+- name: create-enrollment-token -s node
+  ansible.builtin.shell: /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s node
+  register: enrollment_token
+  when: inventory_hostname in groups['master']
+
+- name: reconfigure-node --enrollment-token
+  ansible.builtin.expect:
+    command: /usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token '{{ enrollment_token}}'
+    responses:
+      Question:
+        - y
+  when: inventory_hostname in groups['data'] 
+
+
+
